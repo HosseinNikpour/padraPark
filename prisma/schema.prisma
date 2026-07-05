@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Branch {
+  id        Int           @id @default(autoincrement())
+  name      String
+  createdAt DateTime      @default(now())
+  reports   DailyReport[]
+  devices   Device[]
+}
+
+model MenuItem {
+  id        Int             @id @default(autoincrement())
+  code      String?         @unique
+  title     String
+  type      MenuItemType
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  deletedAt DateTime?
+  sales     DailySaleItem[]
+  prices    MenuItemPrice[]
+}
+
+model MenuItemPrice {
+  id         Int       @id @default(autoincrement())
+  menuItemId Int
+  price      Int
+  startDate  DateTime
+  endDate    DateTime?
+  createdAt  DateTime  @default(now())
+  menuItem   MenuItem  @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@index([menuItemId, startDate])
+}
+
+model DailyReport {
+  id        Int             @id @default(autoincrement())
+  date      DateTime
+  branchId  Int
+  branch    Branch          @relation(fields: [branchId], references: [id])
+  description String?
+  createdAt DateTime        @default(now())
+  updatedAt   DateTime @updatedAt
+  events    DailyEvent[]
+ 
+  sales     DailySaleItem[]
+  issues    Issue[]
+  incidents Incident[]
+  totalSales      Int @default(0)
+  totalDiscount   Int @default(0)
+  cashAmount      Int @default(0)
+  invoiceCount    Int @default(0)
+  @@unique([branchId, date])
+}
+
+model DailySaleItem {
+  id         Int         @id @default(autoincrement())
+  reportId   Int
+  menuItemId Int
+  qty        Int
+  unitPrice  Int
+  discount   Int         @default(0)
+  totalPrice Int
+  menuItem   MenuItem    @relation(fields: [menuItemId], references: [id])
+  report     DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Device {
+  id        Int           @id @default(autoincrement())
+  branchId  Int
+  title     String
+  createdAt DateTime      @default(now())
+  branch    Branch        @relation(fields: [branchId], references: [id])
+
+}
+
+model Issue {
+
+  id Int @id @default(autoincrement())
+
+  reportId Int
+  report DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  title String
+
+  description String
+
+  actionTaken String?
+
+  repairDate DateTime?
+
+  status IssueStatus @default(OPEN)
+
+  createdAt DateTime @default(now())
+}
+
+model Incident {
+
+  id Int @id @default(autoincrement())
+
+  reportId Int
+  report DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  title String
+
+  description String
+
+  actionTaken String?
+
+  createdAt DateTime @default(now())
+}
+
+model DailyEvent {
+
+  id Int @id @default(autoincrement())
+
+  reportId Int
+  report DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  title String
+
+  description String
+
+  createdAt DateTime @default(now())
+}
+
+enum MenuItemType {
+  GAME
+  CAFE
+}
+
+enum IssueStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+enum IncidentType {
+  DEVICE
+  EQUIPMENT
+  INFRASTRUCTURE
+  OTHER
+}
