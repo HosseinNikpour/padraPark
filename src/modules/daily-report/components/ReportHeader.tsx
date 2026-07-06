@@ -1,6 +1,6 @@
 "use client";
 
-import PersianDatePicker from "./PersianDatePicker";
+import PersianDatePicker from "@/components/shared/PersianDatePicker";
 
 interface Props {
   branchId: number;
