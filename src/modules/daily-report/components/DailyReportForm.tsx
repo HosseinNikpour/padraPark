@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import ReportHeader from "./ReportHeader";
-import FileUploader from "../../../components/shared/FileUploader";
+import FileUploader from "../../../shared/forms/FileUploader";
 import SalesPreviewTable from "./SalesPreviewTable";
 
 import { parseExcel } from "../excel";

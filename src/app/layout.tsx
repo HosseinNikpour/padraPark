@@ -1,5 +1,5 @@
 import "./globals.css";
-import AppLayout from "@/components/layout/AppLayout";
+import AppLayout from "@/shared/layout/AppLayout";
 
 export default function RootLayout({
   children,
