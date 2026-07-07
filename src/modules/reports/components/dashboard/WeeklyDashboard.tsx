@@ -1,20 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import HighchartsPie from "@/shared/charts/HighchartsPie";
+import HighchartsBar from "@/shared/charts/HighchartsBar";
 import PersianDatePicker from "@/shared/forms/PersianDatePicker";
-
+import type { WeeklySummary } from "../../types";
 import { getWeeklySummaryAction   } from "../../actions";
 
 import SummaryCards from "../cards/SummaryCards";
-import WeeklyPieChart from "../charts/WeeklyPieChart";
-import WeeklyBarChart from "../charts/WeeklyBarChart";
-import SalesTable from "../tables/SalesTable";
+
 
 export default function WeeklyReportDashboard() {
   const [date, setDate] = useState(new Date());
 
-  const [summary, setSummary] = useState<any>(null);
+const [summary, setSummary] = useState<WeeklySummary | null>(null);
 
   useEffect(() => {
     load();
@@ -61,13 +60,10 @@ export default function WeeklyReportDashboard() {
 
       <div className="grid lg:grid-cols-2 gap-6">
 
-        <WeeklyPieChart
-          data={summary.pieChart}
-        />
+        <HighchartsPie    title="سهم فروش دستگاه‌ها"    data={summary.pieChart}/>
 
-        <WeeklyBarChart
-          data={summary.dailyChart}
-        />
+       <HighchartsBar    title="فروش روزهای هفته"    categories={summary.dailyChart.map(x=>x.day)}    data={summary.dailyChart.map(x=>x.amount)}
+/>
 
       </div>
 

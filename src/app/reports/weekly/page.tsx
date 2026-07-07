@@ -1,4 +1,4 @@
-import WeeklyReportDashboard from "../../../modules/reports/components/dashboard/WeeklyDashboard";
+import WeeklyReportDashboard from "@/modules/reports/components/dashboard/WeeklyDashboard";
 
 export default function Page() {
   return <WeeklyReportDashboard />;

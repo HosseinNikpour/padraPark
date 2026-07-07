@@ -1,14 +1,14 @@
 "use server";
 
 import {
-  getDailySummaryRepository,
-  getWeeklySummary,
-} from "./repository";
+  getDailySummaryService,
+  getWeeklySummaryService,
+} from "./service";
 
 export async function getDailySummary(date: Date) {
-  return getDailySummaryRepository(date);
+  return getDailySummaryService(date);
 }
 
 export async function getWeeklySummaryAction(date: Date) {
-  return getWeeklySummary(date);
+  return getWeeklySummaryService(date);
 }

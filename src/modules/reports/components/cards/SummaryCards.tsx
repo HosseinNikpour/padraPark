@@ -1,29 +1,14 @@
 import SummaryCard from "./SummaryCard";
+import type { SummaryCardData } from "../../types";
 
 interface Props {
   summary: {
-    downstairs: {
-      tickets: number;
-      sales: number;
-    };
-
-    upstairs: {
-      tickets: number;
-      sales: number;
-    };
-
-    cafe: {
-      tickets: number;
-      sales: number;
-    };
-
-    total: {
-      tickets: number;
-      sales: number;
-    };
+    downstairs: SummaryCardData;
+    upstairs: SummaryCardData;
+    cafe: SummaryCardData;
+    total: SummaryCardData;
   };
 }
-
 export default function SummaryCards({
   summary,
 }: Props) {

@@ -1,81 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import DataTable from "@/shared/table/DataTable";
+import { Column } from "@/shared/table/types";
 import PersianDatePicker from "@/shared/forms/PersianDatePicker";
-
+// import HighchartsPie from "@/shared/charts/HighchartsPie";
+import HighchartsBar from "@/shared/charts/HighchartsBar";
 import { getDailySummary } from "../../actions";
-
+import type { DailySummary,SalesDetail  } from "../../types";
 import SummaryCards from "../cards/SummaryCards";
-import SalesByGameChart from "../charts/SalesByGameChart";
-import SalesTable from "../tables/SalesTable";
 
-interface Summary {
-  downstairs: {
-    tickets: number;
-    sales: number;
-  };
-
-  upstairs: {
-    tickets: number;
-    sales: number;
-  };
-
-  cafe: {
-    tickets: number;
-    sales: number;
-  };
-
-  total: {
-    tickets: number;
-    sales: number;
-  };
-
-  chart: {
-    name: string;
-    amount: number;
-  }[];
-
-  details: {
-    name: string;
-    qty: number;
-    amount: number;
-     average:number;
-    best:number;
-    diff:number;
-  }[];
-}
 
 export default function DailyReportDashboard() {
   const [date, setDate] = useState(new Date());
 
   const [loading, setLoading] = useState(false);
 
-  const [summary, setSummary] = useState<Summary>({
-    downstairs: {
-      tickets: 0,
-      sales: 0,
-    },
-
-    upstairs: {
-      tickets: 0,
-      sales: 0,
-    },
-
-    cafe: {
-      tickets: 0,
-      sales: 0,
-    },
-
-    total: {
-      tickets: 0,
-      sales: 0,
-    },
-
-    chart: [],
-
-    details: [],
-  });
+  const [summary, setSummary] = useState<DailySummary | null>(null);
 
   useEffect(() => {
     loadData();
@@ -93,6 +34,67 @@ export default function DailyReportDashboard() {
     }
   }
 
+  const columns: Column<SalesDetail>[] = [
+
+    {
+      key: "name",
+      title: "دستگاه"
+    },
+
+    {
+      key: "qty",
+      title: "تعداد"
+    },
+
+    {
+      key: "amount",
+      title: "فروش",
+      render: (r) =>
+        r.amount.toLocaleString("fa-IR")
+    },
+
+    {
+      key: "average",
+      title: "میانگین",
+      render: (r) =>
+        r.average.toLocaleString("fa-IR")
+    },
+
+    {
+      key: "best",
+      title: "بهترین",
+      render: (r) =>
+        r.best.toLocaleString("fa-IR")
+    },
+
+    {
+      key: "diff",
+      title: "رشد",
+      render: (r) =>
+
+        <span
+          className={
+            r.diff >= 0
+              ? "text-green-600"
+              : "text-red-600"
+          }
+        >
+
+          {r.diff} %
+
+        </span>
+
+    }
+
+  ];
+
+  if (!summary) {
+    return (
+      <div className="p-10 text-center">
+        در حال بارگذاری...
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       <div className="rounded-xl bg-white p-5 shadow">
@@ -106,19 +108,15 @@ export default function DailyReportDashboard() {
         />
       </div>
 
-      <SummaryCards summary={summary} />
+      <SummaryCards summary={summary!} />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <SalesByGameChart
-            data={summary.chart}
-          />
+          <HighchartsBar title="فروش دستگاه‌ها" categories={summary!.chart.map(x => x.name)} data={summary!.chart.map(x => x.amount)} />
         </div>
 
         <div>
-          <SalesTable
-            data={summary.details}
-          />
+          <DataTable columns={columns} data={summary.details}  title="فروش دستگاه‌ها"/>
         </div>
       </div>
 

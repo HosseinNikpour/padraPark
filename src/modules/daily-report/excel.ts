@@ -40,7 +40,15 @@ export async function parseExcel(  file: File): Promise<ParsedExcel> {
     break;
   }
 
-  result.push({
+  // result.push({
+  //   code: String(row[4]),
+  //   qty: Number(row[2] ?? 0),
+  //   unitPrice: Number(row[1] ?? 0),
+  //   totalPrice: Number(row[0] ?? 0),
+  //   title: String(row[3] ?? ""),
+  // });
+
+   result.push({
     code: String(row[0]),
     qty: Number(row[1] ?? 0),
     unitPrice: Number(row[2] ?? 0),
