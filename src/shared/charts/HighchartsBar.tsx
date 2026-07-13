@@ -14,12 +14,16 @@ export default function HighchartsBar({
   title,
   categories,
   data,
-  color = "#2563eb",
+  color = "#3B82F6",
 }: Props) {
   const options: Highcharts.Options = {
     chart: {
       type: "column",
       height: 420,
+      backgroundColor: "#1F2533",
+      style: {
+        fontFamily: "Vazirmatn",
+      },
     },
 
     title: {

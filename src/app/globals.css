@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@theme {
+
+  --font-sans: var(--font-vazir);
+
+  --radius: 1rem;
+
+}

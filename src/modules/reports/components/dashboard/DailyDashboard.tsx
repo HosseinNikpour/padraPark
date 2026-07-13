@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import DataTable from "@/shared/table/DataTable";
 import { Column } from "@/shared/table/types";
 import PersianDatePicker from "@/shared/forms/PersianDatePicker";
-// import HighchartsPie from "@/shared/charts/HighchartsPie";
+import ChartCard from "@/shared/dashboard/ChartCard";
 import HighchartsBar from "@/shared/charts/HighchartsBar";
 import { getDailySummary } from "../../actions";
-import type { DailySummary,SalesDetail  } from "../../types";
+import type { DailySummary, SalesDetail } from "../../types";
 import SummaryCards from "../cards/SummaryCards";
 
 
@@ -110,16 +110,24 @@ export default function DailyReportDashboard() {
 
       <SummaryCards summary={summary!} />
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="xl:col-span-2">
-          <HighchartsBar title="فروش دستگاه‌ها" categories={summary!.chart.map(x => x.name)} data={summary!.chart.map(x => x.amount)} />
-        </div>
+      <div className="grid grid-cols-12 gap-6 xl:grid-cols-12">
+        <div className="xl:col-span-6">
+          <ChartCard title="فروش دستگاه‌ها">
 
-        <div>
-          <DataTable columns={columns} data={summary.details}  title="فروش دستگاه‌ها"/>
+            <HighchartsBar
+              title=""
+              categories={summary.chart.map(x => x.name)}
+              data={summary.chart.map(x => x.amount)}
+            />
+
+          </ChartCard>
+        </div>
+        <div className="xl:col-span-6">
+          <ChartCard title="فروش دستگاه‌ها">
+            <DataTable columns={columns} data={summary.details} title="" />
+          </ChartCard>
         </div>
       </div>
-
       {loading && (
         <div className="text-center text-gray-500">
           در حال بارگذاری...

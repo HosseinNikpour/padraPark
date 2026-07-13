@@ -13,6 +13,7 @@ model Branch {
   createdAt DateTime      @default(now())
   reports   DailyReport[]
   devices   Device[]
+  users User[]
 }
 
 model MenuItem {
@@ -148,4 +149,33 @@ enum IncidentType {
   EQUIPMENT
   INFRASTRUCTURE
   OTHER
+}
+enum UserRole {
+  ADMIN
+  MANAGER
+  OPERATOR
+  CAFE
+}
+model User {
+
+  id           Int      @id @default(autoincrement())
+
+  username     String   @unique
+
+  passwordHash String
+
+  fullName     String
+
+  role         UserRole
+
+  isActive     Boolean  @default(true)
+
+  createdAt    DateTime @default(now())
+
+  updatedAt    DateTime @updatedAt
+
+  branchId     Int?
+
+  branch       Branch? @relation(fields: [branchId], references: [id])
+
 }

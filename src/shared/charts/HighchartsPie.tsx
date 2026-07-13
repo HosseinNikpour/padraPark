@@ -21,6 +21,10 @@ export default function HighchartsPie({
     chart: {
       type: "pie",
       height: 420,
+      backgroundColor: "#1F2533",
+      style: {
+        fontFamily: "Vazirmatn",
+      },
     },
 
     title: {

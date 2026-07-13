@@ -1,4 +1,14 @@
-import SummaryCard from "./SummaryCard";
+import {
+  Ticket,
+  Coffee,
+  Building2,
+  Wallet,
+  Trophy,
+  MoonStar,
+} from "lucide-react";
+
+import StatCard from "@/shared/dashboard/StatCard";
+
 import type { SummaryCardData } from "../../types";
 
 interface Props {
@@ -9,35 +19,60 @@ interface Props {
     total: SummaryCardData;
   };
 }
+
 export default function SummaryCards({
   summary,
 }: Props) {
   return (
-    <div className="grid gap-5 lg:grid-cols-4">
+    <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
 
-      <SummaryCard
-        title="طبقه پایین"
-        tickets={summary.downstairs.tickets}
-        sales={summary.downstairs.sales}
-      />
+      <StatCard
+    title="بازی‌های حرکتی"
+    sales={summary.downstairs.sales}
+    tickets={summary.downstairs.tickets}
+    icon={<Ticket size={28} />}
+    color="bg-sky-500"
+/>
 
-      <SummaryCard
-        title="طبقه بالا"
-        tickets={summary.upstairs.tickets}
-        sales={summary.upstairs.sales}
-      />
+<StatCard
+    title="اتاق‌های ایونت"
+    sales={summary.upstairs.sales}
+    tickets={summary.upstairs.tickets}
+    icon={<Building2 size={28} />}
+    color="bg-violet-500"
+/>
 
-      <SummaryCard
-        title="کافه"
-        tickets={summary.cafe.tickets}
-        sales={summary.cafe.sales}
-      />
+<StatCard
+    title="جام و لیگ"
+    sales={summary.upstairs.sales}
+    tickets={summary.upstairs.tickets}
+    icon={<Trophy size={28} />}
+    color="bg-amber-500"
+/>
 
-      <SummaryCard
-        title="مجموع"
-        tickets={summary.total.tickets}
-        sales={summary.total.sales}
-      />
+<StatCard
+    title="کافه"
+    sales={summary.cafe.sales}
+    tickets={summary.cafe.tickets}
+    icon={<Coffee size={28} />}
+    color="bg-orange-500"
+/>
+
+<StatCard
+    title="شب‌های پادرا"
+    sales={0}
+    tickets={0}
+    icon={<MoonStar size={28} />}
+    color="bg-indigo-500"
+/>
+
+<StatCard
+    title="فروش کل"
+    sales={summary.total.sales}
+    tickets={summary.total.tickets}
+    icon={<Wallet size={28} />}
+    color="bg-emerald-500"
+/>
 
     </div>
   );

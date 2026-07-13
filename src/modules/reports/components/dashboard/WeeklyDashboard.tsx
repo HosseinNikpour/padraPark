@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ChartCard from "@/shared/dashboard/ChartCard";
 import HighchartsPie from "@/shared/charts/HighchartsPie";
 import HighchartsBar from "@/shared/charts/HighchartsBar";
 import PersianDatePicker from "@/shared/forms/PersianDatePicker";
 import type { WeeklySummary } from "../../types";
-import { getWeeklySummaryAction   } from "../../actions";
+import { getWeeklySummaryAction } from "../../actions";
 
 import SummaryCards from "../cards/SummaryCards";
 
@@ -13,14 +14,14 @@ import SummaryCards from "../cards/SummaryCards";
 export default function WeeklyReportDashboard() {
   const [date, setDate] = useState(new Date());
 
-const [summary, setSummary] = useState<WeeklySummary | null>(null);
+  const [summary, setSummary] = useState<WeeklySummary | null>(null);
 
   useEffect(() => {
     load();
   }, [date]);
 
   async function load() {
-    const result = await getWeeklySummaryAction (date);
+    const result = await getWeeklySummaryAction(date);
     setSummary(result);
   }
 
@@ -59,15 +60,16 @@ const [summary, setSummary] = useState<WeeklySummary | null>(null);
       <SummaryCards summary={summary} />
 
       <div className="grid lg:grid-cols-2 gap-6">
-
-        <HighchartsPie    title="سهم فروش دستگاه‌ها"    data={summary.pieChart}/>
-
-       <HighchartsBar    title="فروش روزهای هفته"    categories={summary.dailyChart.map(x=>x.day)}    data={summary.dailyChart.map(x=>x.amount)}
-/>
+        <ChartCard title="سهم فروش دستگاه‌ها">
+          <HighchartsPie title="" data={summary.pieChart} />
+        </ChartCard>
+        <ChartCard title="فروش روزهای هفته">
+          <HighchartsBar title="" categories={summary.dailyChart.map(x => x.day)} data={summary.dailyChart.map(x => x.amount)} />
+        </ChartCard>
 
       </div>
 
-     
+
 
     </div>
   );
