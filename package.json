@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "prisma": {
-    "seed": "tsx prisma/seedUsers.ts"
+    "seed": "tsx prisma/seedChecklist.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

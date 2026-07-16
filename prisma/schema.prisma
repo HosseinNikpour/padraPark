@@ -13,7 +13,7 @@ model Branch {
   createdAt DateTime      @default(now())
   reports   DailyReport[]
   devices   Device[]
-  users User[]
+  users     User[]
 }
 
 model MenuItem {
@@ -42,22 +42,23 @@ model MenuItemPrice {
 }
 
 model DailyReport {
-  id        Int             @id @default(autoincrement())
-  date      DateTime
-  branchId  Int
-  branch    Branch          @relation(fields: [branchId], references: [id])
+  id          Int          @id @default(autoincrement())
+  date        DateTime
+  branchId    Int
+  branch      Branch       @relation(fields: [branchId], references: [id])
   description String?
-  createdAt DateTime        @default(now())
-  updatedAt   DateTime @updatedAt
-  events    DailyEvent[]
- 
-  sales     DailySaleItem[]
-  issues    Issue[]
-  incidents Incident[]
-  totalSales      Int @default(0)
-  totalDiscount   Int @default(0)
-  cashAmount      Int @default(0)
-  invoiceCount    Int @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  events      DailyEvent[]
+
+  sales         DailySaleItem[]
+  issues        Issue[]
+  incidents     Incident[]
+  totalSales    Int             @default(0)
+  totalDiscount Int             @default(0)
+  cashAmount    Int             @default(0)
+  invoiceCount  Int             @default(0)
+
   @@unique([branchId, date])
 }
 
@@ -71,24 +72,22 @@ model DailySaleItem {
   totalPrice Int
   menuItem   MenuItem    @relation(fields: [menuItemId], references: [id])
   report     DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  createdAt  DateTime    @default(now())
 }
 
 model Device {
-  id        Int           @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   branchId  Int
   title     String
-  createdAt DateTime      @default(now())
-  branch    Branch        @relation(fields: [branchId], references: [id])
-
+  createdAt DateTime @default(now())
+  branch    Branch   @relation(fields: [branchId], references: [id])
 }
 
 model Issue {
-
   id Int @id @default(autoincrement())
 
   reportId Int
-  report DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  report   DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   title String
 
@@ -104,11 +103,10 @@ model Issue {
 }
 
 model Incident {
-
   id Int @id @default(autoincrement())
 
   reportId Int
-  report DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  report   DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   title String
 
@@ -120,11 +118,10 @@ model Incident {
 }
 
 model DailyEvent {
-
   id Int @id @default(autoincrement())
 
   reportId Int
-  report DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  report   DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   title String
 
@@ -150,32 +147,109 @@ enum IncidentType {
   INFRASTRUCTURE
   OTHER
 }
+
 enum UserRole {
   ADMIN
   MANAGER
   OPERATOR
   CAFE
 }
+
+enum ChecklistType {
+  START
+  END
+}
+
 model User {
+  id Int @id @default(autoincrement())
 
-  id           Int      @id @default(autoincrement())
-
-  username     String   @unique
+  username String @unique
 
   passwordHash String
 
-  fullName     String
+  fullName String
 
-  role         UserRole
+  role UserRole
 
-  isActive     Boolean  @default(true)
+  isActive Boolean @default(true)
 
-  createdAt    DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  updatedAt    DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
-  branchId     Int?
+  branchId Int?
 
-  branch       Branch? @relation(fields: [branchId], references: [id])
+  branch Branch? @relation(fields: [branchId], references: [id])
 
+  checklistResponses ChecklistResponse[]
+}
+
+model ChecklistGroup {
+  id Int @id @default(autoincrement())
+
+  title String
+
+  sortOrder Int @default(0)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+
+  questions ChecklistQuestion[]
+  responses ChecklistResponse[]
+}
+
+model ChecklistQuestion {
+  id Int @id @default(autoincrement())
+
+  title String
+
+  description String?
+  type        ChecklistType
+  groupId     Int
+
+  group ChecklistGroup @relation(fields: [groupId], references: [id])
+
+  sortOrder Int @default(0)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime          @default(now())
+  answers   ChecklistAnswer[]
+}
+
+model ChecklistResponse {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  type ChecklistType
+
+  groupId Int
+  group   ChecklistGroup @relation(fields: [groupId], references: [id])
+
+  description String?
+
+  attachment String?
+
+  createdAt DateTime @default(now())
+
+  answers ChecklistAnswer[]
+}
+
+model ChecklistAnswer {
+  id Int @id @default(autoincrement())
+
+  responseId Int
+
+  questionId Int
+
+  checked Boolean
+
+  description String?
+
+  response ChecklistResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+
+  question ChecklistQuestion @relation(fields: [questionId], references: [id])
 }
