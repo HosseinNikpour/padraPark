@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "prisma": {
-    "seed": "tsx prisma/seedChecklist.ts"
+    "seed": "tsx prisma/seedUsers.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
@@ -33,7 +33,7 @@
     "react-date-object": "^2.1.9",
     "react-dom": "19.2.4",
     "react-dropzone": "^15.0.0",
-    "react-hook-form": "^7.80.0",
+    "react-hook-form": "^7.81.0",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.7.0",
     "react-multi-date-picker": "^4.5.2",

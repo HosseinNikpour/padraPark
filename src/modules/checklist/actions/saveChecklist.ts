@@ -1,46 +1,23 @@
 "use server";
 
-import { ChecklistType } from "@prisma/client";
-import { auth } from "@/modules/auth/lib/auth";
+import { currentUser } from "@/core/auth/currentUser";
 import { ChecklistService } from "../services/ChecklistService";
+import { SaveChecklistDto } from "../domain/dto/SaveChecklistDto";
+
+import { can } from "@/core/permission/can";
+import { Permission } from "@/core/permission/Permissions";
 
 const service = new ChecklistService();
-
-interface SaveChecklistDto {
-
-    groupId: number;
-
-    type: ChecklistType;
-
-    description?: string;
-
-    attachment?: string;
-
-    answers: {
-
-        questionId: number;
-
-        checked: boolean;
-
-        description?: string;
-
-    }[];
-
-}
 
 export async function saveChecklist(
     dto: SaveChecklistDto
 ) {
 
-    const session = await auth();
-
-    if (!session?.user) {
-        throw new Error("Unauthorized");
-    }
-
+    const user = await currentUser();
+    await can(Permission.ChecklistCreate);
     return service.save(
         dto,
-        Number((session.user as any).id)
+        user.id
     );
 
 }

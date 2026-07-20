@@ -2,13 +2,13 @@
 
 import { Button } from "@/shared/ui/button";
 
-import { AuthService } from "../services/AuthService";
+import { logoutAction } from "@/modules/auth/actions/logoutAction";
 
 export default function LogoutButton(){
 
     async function logout(){
 
-        await new AuthService().logout();
+        await logoutAction();
 
     }
 

@@ -1,29 +1,24 @@
 import Link from "next/link";
 import { ChecklistType } from "@prisma/client";
 
+import { currentUser } from "@/core/auth/currentUser";
+
 import { ChecklistService } from "@/modules/checklist/services/ChecklistService";
-import { auth } from "@/modules/auth/lib/auth";
 
 const service = new ChecklistService();
 
 export default async function Page() {
 
-    const session = await auth();
-
-    if (!session?.user) {
-        return null;
-    }
-
-    const userId = Number((session.user as any).id);
+    const user = await currentUser();
 
     const groups = await service.getGroups();
 
     const completed = await service.getTodayCompletedGroups(
-        userId,
+        user.id,
         ChecklistType.START
     );
 
-   const completedIds = completed.map(x => x.groupId);
+    const completedIds = completed.map(x => x.groupId);
 
     return (
 
@@ -63,7 +58,6 @@ export default async function Page() {
                                 </span>
 
                                 {
-
                                     done
                                         ? (
                                             <span className="text-green-700 font-bold">
@@ -79,7 +73,6 @@ export default async function Page() {
 
                                             </span>
                                         )
-
                                 }
 
                             </Link>
