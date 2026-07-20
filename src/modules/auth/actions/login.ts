@@ -1,13 +1,13 @@
 "use server";
 
-import { AuthService } from "../services/AuthService";
+import { loginAction } from "@/modules/auth/actions/loginAction";
 
-export async function loginAction(
+export async function LoginAction(
     username: string,
     password: string
 ) {
-    return new AuthService().login(
-        username,
-        password
-    );
+    return await loginAction(
+    username,
+    password
+);
 }

@@ -89,7 +89,7 @@ export const {
                 token.id = user.id;
 
                 token.username = (user as any).username;
-
+                token.fullName = user.name;
                 token.role = (user as any).role;
 
             }
@@ -103,7 +103,7 @@ export const {
             (session.user as any).id = token.id;
 
             (session.user as any).username = token.username;
-
+            (session.user as any).fullName = token.fullName;
             (session.user as any).role = token.role;
 
             return session;

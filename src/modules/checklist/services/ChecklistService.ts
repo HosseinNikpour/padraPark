@@ -1,55 +1,48 @@
 import { ChecklistType } from "@prisma/client";
+
+import { BaseCrudService } from "@/core/base/BaseCrudService";
+
 import { ChecklistRepository } from "../repository/ChecklistRepository";
+import { SaveChecklistDto } from "../domain/dto/SaveChecklistDto";
 
-export class ChecklistService {
+export class ChecklistService extends BaseCrudService<ChecklistRepository> {
 
-    private repository = new ChecklistRepository();
-    getGroups() {
-
-        return this.repository.getGroups();
-
+    constructor() {
+        super(new ChecklistRepository());
     }
 
-    getTodayCompletedGroups(userId: number, type: ChecklistType) {
-
-        return this.repository.getTodayCompletedGroups(userId, type);
-
-    }
     getQuestions(
         type: ChecklistType,
         groupId: number
     ) {
-
         return this.repository.getQuestions(
             type,
             groupId
         );
+    }
 
+    getGroups() {
+        return this.repository.getGroups();
+    }
+
+    getTodayCompletedGroups(
+        userId: number,
+        type: ChecklistType
+    ) {
+        return this.repository.getTodayCompletedGroups(
+            userId,
+            type
+        );
     }
 
     save(
-        dto: {
-            groupId: number;
-            type: ChecklistType;
-            description?: string;
-            attachment?: string;
-            answers: {
-                questionId: number;
-                checked: boolean;
-                description?: string;
-            }[];
-        },
+        dto: SaveChecklistDto,
         userId: number
     ) {
-
-        return this.repository.saveResponse({
-
-            ...dto,
-
-            userId,
-
-        });
-
+        return this.repository.saveResponse(
+            dto,
+            userId
+        );
     }
 
 }
