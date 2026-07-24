@@ -21,7 +21,7 @@ export async function OperatorDashboard({
     const facade = new DashboardFacade();
 
     const dashboard =
-        await facade.getOperatorDashboard(user.id);
+        await facade.getGameMasterDashboard(user.id);
 
     return (
 

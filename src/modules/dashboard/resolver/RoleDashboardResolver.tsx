@@ -2,7 +2,7 @@ import { CurrentUser } from "@/core/auth/currentUser";
 
 import { UserRole } from "@prisma/client";
 
-import { OperatorDashboard } from "../pages/OperatorDashboard";
+import { OperatorDashboard } from "../pages/GameMasterDashboard";
 import { ReceptionDashboard } from "../pages/ReceptionDashboard";
 import { ManagerDashboard } from "../pages/ManagerDashboard";
 import { AdminDashboard } from "../pages/AdminDashboard";
@@ -28,6 +28,10 @@ export async function RoleDashboardResolver(
             return <AdminDashboard user={user} />;
 
         case UserRole.CAFE:
+
+            return <ReceptionDashboard user={user} />;
+
+        case UserRole.RECEPTION:
 
             return <ReceptionDashboard user={user} />;
 

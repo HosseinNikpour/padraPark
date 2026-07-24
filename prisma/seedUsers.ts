@@ -22,7 +22,7 @@ async function main() {
   // });
 const exists = await prisma.user.findUnique({
     where: {
-      username: "gm1",
+      username: "resp1",
     },
   });
 
@@ -30,10 +30,10 @@ const exists = await prisma.user.findUnique({
 
   await prisma.user.create({
     data: {
-      username: "gm1",
-      fullName: "گیم مستر 1",
+      username: "resp1",
+      fullName: "رسپشن 1",
       passwordHash: await hashPassword("123456"),
-      role: UserRole.OPERATOR,
+      role: UserRole.RECEPTION,
 
     isActive: true,
     },

@@ -153,6 +153,7 @@ enum UserRole {
   MANAGER
   OPERATOR
   CAFE
+  RECEPTION
 }
 
 enum ChecklistType {
