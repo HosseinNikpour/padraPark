@@ -8,10 +8,11 @@ const service = new ChecklistService();
 
 export async function getChecklist(
 
-    type: ChecklistType
+    type: ChecklistType,
+        groupId: number
 
 ) {
 
-    return service.getQuestions(type);
+    return service.getQuestions(type,groupId);
 
 }

@@ -2,105 +2,102 @@ import { averageBy, maxBy } from "@/shared/utils/array";
 import { percentDiff } from "@/shared/utils/math";
 
 type Sale = {
-  menuItemId: number;
-  totalPrice: number;
-  menuItem: {
-    type: string;
-  };
+    menuItemId: number;
+    totalPrice: number;
+    menuItem: {
+        type: string;
+    };
 };
 
 type Report = {
-  date: Date;
-  sales: Sale[];
+    date: Date;
+    sales: Sale[];
 };
 
+type PerformanceMode = "day" | "week";
+
 export function createPerformanceCalculator(
-  reports: Report[],
-  selectedDate: Date
+    reports: Report[],
+    selectedDate: Date,
+    mode: PerformanceMode = "day"
 ) {
-  const isHoliday =
-    selectedDate.getDay() === 4 ||
-    selectedDate.getDay() === 5;
 
-  // فقط گزارش‌های قبل از تاریخ انتخاب شده
-  const previousReports = reports.filter(
-    (report) => report.date < selectedDate
-  );
+    let comparableReports: Report[] = [];
 
-  // فقط روزهای مشابه (عادی / تعطیل)
-  const comparableReports = previousReports.filter((report) => {
-    const holiday =
-      report.date.getDay() === 4 ||
-      report.date.getDay() === 5;
+    if (mode === "day") {
 
-    return holiday === isHoliday;
-  });
+        const isHoliday =
+            selectedDate.getDay() === 4 ||
+            selectedDate.getDay() === 5;
 
-  return (
-    menuId: number,
-    currentAmount: number
-  ) => {
-    //-----------------------------
-    // Average
-    //-----------------------------
+        comparableReports = reports.filter(report => {
 
-    const previousAmounts = comparableReports
-      .map((report) =>
-        report.sales
-          .filter(
-            (sale) =>
-              sale.menuItem.type === "GAME" &&
-              sale.menuItemId === menuId
-          )
-          .reduce(
-            (sum, sale) => sum + sale.totalPrice,
-            0
-          )
-      )
-      // روزهایی که فروش نداشته حذف شوند
-      .filter((x) => x > 0);
+            if (report.date >= selectedDate)
+                return false;
 
-    const average = averageBy(
-      previousAmounts,
-      (x) => x
-    );
+            const holiday =
+                report.date.getDay() === 4 ||
+                report.date.getDay() === 5;
 
-    //-----------------------------
-    // Best
-    //-----------------------------
+            return holiday === isHoliday;
 
-    const best = Math.max(
-      currentAmount,
+        });
 
-      maxBy(
-        previousReports.map((report) =>
-          report.sales
-            .filter(
-              (sale) =>
-                sale.menuItem.type === "GAME" &&
-                sale.menuItemId === menuId
+    }
+    else {
+
+        comparableReports = reports.filter(
+            report => report.date < selectedDate
+        );
+
+    }
+
+    return (
+        menuId: number,
+        currentAmount: number
+    ) => {
+
+        const previousAmounts = comparableReports
+            .map(report =>
+                report.sales
+                    .filter(sale =>
+                        // sale.menuItem.type === "GAME" &&
+                        sale.menuItemId === menuId
+                    )
+                    .reduce(
+                        (sum, sale) => sum + sale.totalPrice,
+                        0
+                    )
             )
-            .reduce(
-              (sum, sale) =>
-                sum + sale.totalPrice,
-              0
+            .filter(x => x > 0);
+
+        const average = averageBy(
+            previousAmounts,
+            x => x
+        );
+
+        const best = Math.max(
+            currentAmount,
+
+            maxBy(
+                previousAmounts,
+                x => x
             )
-        ),
-        (x) => x
-      )
-    );
+        );
 
-    //-----------------------------
+        return {
 
-    return {
-      average,
+            average,
 
-      best,
+            best,
 
-      diff: percentDiff(
-        currentAmount,
-        average
-      ),
+            diff: percentDiff(
+                currentAmount,
+                average
+            ),
+
+        };
+
     };
-  };
+
 }

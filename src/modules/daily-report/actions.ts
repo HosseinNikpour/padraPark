@@ -98,3 +98,68 @@ export async function saveDailyReport(data: {
 
   revalidatePath("/daily-report");
 }
+
+export async function getDailySales(
+    branchId: number,
+    date: string
+) {
+    const selectedDate = new Date(date);
+
+    const start = new Date(selectedDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(selectedDate);
+    end.setHours(23, 59, 59, 999);
+
+    const report = await prisma.dailyReport.findFirst({
+        where: {
+            branchId,
+            date: {
+                gte: start,
+                lte: end,
+            },
+        },
+        include: {
+            sales: {
+                include: {
+                    menuItem: true,
+                },
+                orderBy: {
+                    id: "asc",
+                },
+            },
+        },
+    });
+
+    if (!report) {
+        return {
+            found: false,
+            report: null,
+            sales: [],
+        };
+    }
+
+    return {
+        found: true,
+
+        report: {
+            id: report.id,
+            date: report.date,
+            totalSales: report.totalSales,
+            totalDiscount: report.totalDiscount,
+            cashAmount: report.cashAmount,
+            invoiceCount: report.invoiceCount,
+        },
+
+        sales: report.sales.map((sale) => ({
+            id: sale.id,
+            title: sale.menuItem.title,
+            code: sale.menuItem.code,
+            type: sale.menuItem.type,
+            qty: sale.qty,
+            unitPrice: sale.unitPrice,
+            discount: sale.discount,
+            totalPrice: sale.totalPrice,
+        })),
+    };
+}

@@ -68,10 +68,10 @@ export async function getSummaryByDay(date: Date): Promise<DailySummary> {
             },
         },
     });
-    const performance =
-        createPerformanceCalculator(
+    const performance =        createPerformanceCalculator(
             previousReports,
-            start
+            start,
+             "day"
         );
 
     const gameItems = report.sales.filter(
@@ -81,14 +81,23 @@ export async function getSummaryByDay(date: Date): Promise<DailySummary> {
     const cafeItems = report.sales.filter(
         (x) => x.menuItem.type === "CAFE"
     );
+    const packageItems = report.sales.filter(
+        x => x.menuItem.type === "PAKE"
+    );
 
+    const eventItems = report.sales.filter(
+        x => x.menuItem.type === "EVNT"
+    );
     const gameTickets = sumBy(gameItems, x => x.qty);
 
     const gameSales = sumBy(gameItems, x => x.totalPrice);
-
+    const packageTickets = sumBy(packageItems, x => x.qty);
     const cafeTickets = sumBy(cafeItems, x => x.qty);
+    const eventTickets = sumBy(eventItems, x => x.qty);
 
+    const eventSales = sumBy(eventItems, x => x.totalPrice);
     const cafeSales = sumBy(cafeItems, x => x.totalPrice);
+    const packageSales = sumBy(packageItems, x => x.totalPrice);
     const gameMenus = await prisma.menuItem.findMany({
         where: {
             type: "GAME",
@@ -109,12 +118,15 @@ export async function getSummaryByDay(date: Date): Promise<DailySummary> {
         };
     });
 
+    // chart.push({
+    //     name: "کافه",
+    //     amount: cafeSales,
+    // });
+
     chart.push({
-        name: "کافه",
-        amount: cafeSales,
+        name: "پکیج",
+        amount: packageSales,
     });
-
-
 
     const details = gameMenus.map((menu) => {
 
@@ -152,25 +164,39 @@ export async function getSummaryByDay(date: Date): Promise<DailySummary> {
     });
 
 
-
     details.push({
-        name: "کافه",
-        qty: cafeTickets,
-        amount: cafeSales,
+
+        name: "پکیج",
+
+        qty: packageTickets,
+
+        amount: packageSales,
+
         average: 0,
-        best: cafeSales,
+
+        best: packageSales,
+
         diff: 0,
+
     });
+    // details.push({
+    //     name: "کافه",
+    //     qty: cafeTickets,
+    //     amount: cafeSales,
+    //     average: 0,
+    //     best: cafeSales,
+    //     diff: 0,
+    // });
 
     return {
         downstairs: {
-            tickets: gameTickets,
-            sales: gameSales,
+            tickets: gameTickets+packageTickets,
+            sales: gameSales+packageSales,
         },
 
         upstairs: {
-            tickets: 0,
-            sales: 0,
+            tickets: eventTickets,
+            sales: eventSales,
         },
 
         cafe: {
@@ -179,8 +205,8 @@ export async function getSummaryByDay(date: Date): Promise<DailySummary> {
         },
 
         total: {
-            tickets: gameTickets + cafeTickets,
-            sales: gameSales + cafeSales,
+            tickets: gameTickets + cafeTickets+packageTickets+eventTickets,
+            sales: gameSales + cafeSales+packageSales+eventSales,
         },
 
         chart,

@@ -44,8 +44,8 @@ export default function SummaryCards({
 
 <StatCard
     title="جام و لیگ"
-    sales={summary.upstairs.sales}
-    tickets={summary.upstairs.tickets}
+    sales={0}
+    tickets={0}
     icon={<Trophy size={28} />}
     color="bg-amber-500"
 />

@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import { ExcelSaleRow,ParsedExcel } from "./types";
+import { ExcelSaleRow, ParsedExcel } from "./types";
 
 function toNumber(value: unknown): number {
   if (value === null || value === undefined) return 0;
@@ -15,7 +15,7 @@ function toNumber(value: unknown): number {
   return Number.isNaN(n) ? 0 : n;
 }
 
-export async function parseExcel(  file: File): Promise<ParsedExcel> {
+export async function parseExcel(file: File): Promise<ParsedExcel> {
 
   const buffer = await file.arrayBuffer();
 
@@ -30,43 +30,65 @@ export async function parseExcel(  file: File): Promise<ParsedExcel> {
 
   const result: ExcelSaleRow[] = [];
 
- for (let i = 1; i < rows.length; i++) {
-  const row = rows[i];
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
 
-  if (!row) continue;
+    if (!row) continue;
 
-  // فقط ردیف‌هایی که ستون اولشان عدد است فروش هستند
-  if (typeof row[0] !== "number") {
-    break;
+    // فقط ردیف‌هایی که ستون اولشان عدد است فروش هستند
+    if (typeof row[0] !== "number") {
+      break;
+    }
+
+    // result.push({
+    //   code: String(row[4]),
+    //   qty: Number(row[2] ?? 0),
+    //   unitPrice: Number(row[1] ?? 0),
+    //   totalPrice: Number(row[0] ?? 0),
+    //   title: String(row[3] ?? ""),
+    // });
+
+    result.push({
+      code: String(row[0]),
+      qty: Number(row[1] ?? 0),
+      unitPrice: Number(row[2] ?? 0),
+      totalPrice: Number(row[3] ?? 0),
+      title: String(row[4] ?? ""),
+    });
   }
 
-  // result.push({
-  //   code: String(row[4]),
-  //   qty: Number(row[2] ?? 0),
-  //   unitPrice: Number(row[1] ?? 0),
-  //   totalPrice: Number(row[0] ?? 0),
-  //   title: String(row[3] ?? ""),
-  // });
+  const totalDiscount = toNumber(
+    rows[rows.length - 2]?.[1]
+  );
 
-   result.push({
-    code: String(row[0]),
-    qty: Number(row[1] ?? 0),
-    unitPrice: Number(row[2] ?? 0),
-    totalPrice: Number(row[3] ?? 0),
-    title: String(row[4] ?? ""),
-  });
-}
-  
+  if (totalDiscount > 0) {
+    result.push({
+      code: "DISCOUNT",
+      qty: 1,
+      unitPrice: -totalDiscount,
+      totalPrice: -totalDiscount,
+      title: "تخفیف",
+    });
+  }
+  debugger;
+  const summary = {
+    cashAmount: toNumber(rows[rows.length - 3]?.[0]),
+    totalDiscount: toNumber(rows[rows.length - 3]?.[4]),
+    totalSales: toNumber(rows[rows.length - 3]?.[1]),
+    invoiceCount: result.length,
+  };
+  if (summary.totalDiscount > 0) {
+    result.push({
+      code: "DISCOUNT",
+      qty: 1,
+      unitPrice: -summary.totalDiscount,
+      totalPrice: -summary.totalDiscount,
+      title: "تخفیف",
+    });
+  }
 
- const summary = {
-  cashAmount: toNumber(rows[rows.length - 2]?.[0]),
-  totalDiscount: toNumber(rows[rows.length - 2]?.[1]),
-  totalSales: toNumber(rows[rows.length - 2]?.[3]),
-  invoiceCount: result.length,
-};
-
-return {
-  rows: result,
-  summary,
-};
+  return {
+    rows: result,
+    summary,
+  };
 }

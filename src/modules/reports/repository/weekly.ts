@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { groupBy, sumBy } from "@/shared/utils/array";
 import { getWeekRange } from "@/shared/utils/date";
 import { WeeklySummary } from "../types";
+import { createPerformanceCalculator } from "@/shared/reports/performance";
 
 export async function getSummaryByWeek(date: Date): Promise<WeeklySummary> {
     const { start, end } = getWeekRange(date);
@@ -24,6 +25,38 @@ export async function getSummaryByWeek(date: Date): Promise<WeeklySummary> {
             date: "asc",
         },
     });
+const previousReports = await prisma.dailyReport.findMany({
+
+    where: {
+
+        date: {
+
+            lt: start,
+
+        },
+
+    },
+
+    include: {
+
+        sales: {
+
+            include: {
+
+                menuItem: true,
+
+            },
+
+        },
+
+    },
+
+});
+const performance =
+    createPerformanceCalculator(
+        previousReports,
+        start,"week"
+    );
 
     const sales = reports.flatMap((r) => r.sales);
 
@@ -34,6 +67,13 @@ export async function getSummaryByWeek(date: Date): Promise<WeeklySummary> {
     const cafeSales = sales.filter(
         (x) => x.menuItem.type === "CAFE"
     );
+    const packageSales = sales.filter(
+        x => x.menuItem.type === "PAKE"
+    );
+
+    const eventSales = sales.filter(
+        x => x.menuItem.type === "EVNT"
+    );
 
     const downstairsTickets = sumBy(gameSales, (x) => x.qty);
     const downstairsAmount = sumBy(gameSales, (x) => x.totalPrice);
@@ -41,13 +81,19 @@ export async function getSummaryByWeek(date: Date): Promise<WeeklySummary> {
     const cafeTickets = sumBy(cafeSales, (x) => x.qty);
     const cafeAmount = sumBy(cafeSales, (x) => x.totalPrice);
 
+    const packageTickets = sumBy(packageSales, x => x.qty);
+    const packageAmount = sumBy(packageSales, x => x.totalPrice);
+
+    const eventTickets = sumBy(eventSales, x => x.qty);
+    const eventAmount = sumBy(eventSales, x => x.totalPrice);
     // ---------------- Pie Chart ----------------
 
     const groupedGames = groupBy(
         gameSales,
         (x) => x.menuItem.title
     );
-
+    groupedGames["پکیج"] = packageSales;
+    
     const pieChart = Object.entries(groupedGames).map(
         ([name, items]) => ({
             name,
@@ -105,6 +151,22 @@ export async function getSummaryByWeek(date: Date): Promise<WeeklySummary> {
     );
 
     details.push({
+        name: "پکیج",
+        qty: packageTickets,
+        amount: packageAmount,
+        average: 0,
+        best: 0,
+        diff: 0
+    });
+ details.push({
+        name: "ایونت ها",
+        qty: eventTickets,
+        amount: eventAmount,
+        average: 0,
+        best: 0,
+        diff: 0
+    });
+     details.push({
         name: "کافه",
         qty: cafeTickets,
         amount: cafeAmount,
@@ -112,19 +174,18 @@ export async function getSummaryByWeek(date: Date): Promise<WeeklySummary> {
         best: 0,
         diff: 0
     });
-
     return {
         start,
         end,
 
         downstairs: {
-            tickets: downstairsTickets,
-            sales: downstairsAmount,
+            tickets: downstairsTickets+packageTickets,
+            sales: downstairsAmount+packageAmount,
         },
 
         upstairs: {
-            tickets: 0,
-            sales: 0,
+            tickets: eventTickets,
+            sales: eventAmount,
         },
 
         cafe: {
@@ -133,8 +194,8 @@ export async function getSummaryByWeek(date: Date): Promise<WeeklySummary> {
         },
 
         total: {
-            tickets: downstairsTickets + cafeTickets,
-            sales: downstairsAmount + cafeAmount,
+            tickets: downstairsTickets + cafeTickets+packageTickets+eventTickets,
+            sales: downstairsAmount + cafeAmount+packageAmount+eventAmount,
         },
 
         pieChart,
@@ -145,49 +206,3 @@ export async function getSummaryByWeek(date: Date): Promise<WeeklySummary> {
     };
 }
 
-// export interface WeeklyChartItem {
-//   day: string;
-//   amount: number;
-// }
-
-// export interface WeeklyPieItem {
-//   name: string;
-//   amount: number;
-// }
-
-// export interface WeeklyDetail {
-//   name: string;
-//   qty: number;
-//   amount: number;
-// }
-
-// export interface WeeklySummary {
-//   start: Date;
-//   end: Date;
-
-//   downstairs: {
-//     tickets: number;
-//     sales: number;
-//   };
-
-//   upstairs: {
-//     tickets: number;
-//     sales: number;
-//   };
-
-//   cafe: {
-//     tickets: number;
-//     sales: number;
-//   };
-
-//   total: {
-//     tickets: number;
-//     sales: number;
-//   };
-
-//   pieChart: WeeklyPieItem[];
-
-//   dailyChart: WeeklyChartItem[];
-
-//   details: WeeklyDetail[];
-// }

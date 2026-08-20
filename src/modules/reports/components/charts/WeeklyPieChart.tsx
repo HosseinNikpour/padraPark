@@ -11,6 +11,8 @@ interface Props {
 }
 
 export default function WeeklyPieChart({ data }: Props) {
+  console.log(data);
+  debugger;
   const options: Highcharts.Options = {
     chart: {
       type: "pie",
@@ -28,17 +30,43 @@ export default function WeeklyPieChart({ data }: Props) {
     },
 
     tooltip: {
-      pointFormat:
-        "<b>{point.y:,.0f}</b>",
+      useHTML: true,
+      pointFormatter: function () {
+        return `
+            <b>${this.name}</b><br/>
+            مبلغ فروش:
+            <b>${Highcharts.numberFormat(this.y as number, 0)}</b>
+            تومان
+            <br/>
+            سهم:
+            <b>${Highcharts.numberFormat(this.percentage as number, 1)}%</b>
+        `;
+      },
     },
 
     plotOptions: {
       pie: {
         allowPointSelect: true,
         cursor: "pointer",
+        showInLegend: true,
         dataLabels: {
           enabled: true,
-          format: "{point.name}",
+          distance: 15,
+          formatter: function () {
+
+            return `
+                    <b>${this.name}</b><br/>
+                    ${Highcharts.numberFormat(
+              this.percentage!,
+              1
+            )}%
+                `;
+
+          },
+          style: {
+            fontWeight: "bold",
+            textOutline: "none",
+          },
         },
       },
     },

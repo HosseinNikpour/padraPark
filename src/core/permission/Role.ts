@@ -46,5 +46,7 @@ export const RolePermissions: Record<
     CAFE: [
 
     ],
+RECEPTION: [
 
+],
 };

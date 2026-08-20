@@ -2,6 +2,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
+
+
 datasource db {
   provider = "sqlite"
   url      = "file:./dev.db"
@@ -133,6 +135,8 @@ model DailyEvent {
 enum MenuItemType {
   GAME
   CAFE
+  PAKE
+  EVNT
 }
 
 enum IssueStatus {

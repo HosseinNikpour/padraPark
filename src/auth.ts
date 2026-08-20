@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
-import { getUserByUsername } from "@/modules/auth/repository/UserRepository";
+import { UserRepository } from "@/modules/auth/repository/UserRepository";
 import { verifyPassword } from "@/modules/auth/lib/password";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -21,7 +21,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        const user = await getUserByUsername(
+        const user = await new UserRepository().getByUsername(
           credentials.username as string
         );
 
