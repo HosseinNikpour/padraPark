@@ -56,7 +56,7 @@ model DailyReport {
   sales         DailySaleItem[]
   issues        Issue[]
   incidents     Incident[]
-  totalSales    Int             @default(0)
+  totalSales    BigInt             @default(0)
   totalDiscount Int             @default(0)
   cashAmount    Int             @default(0)
   invoiceCount  Int             @default(0)
