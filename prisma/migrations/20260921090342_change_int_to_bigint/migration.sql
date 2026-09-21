@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "public"."DailyReport" ALTER COLUMN "totalDiscount" SET DATA TYPE BIGINT,
+ALTER COLUMN "cashAmount" SET DATA TYPE BIGINT,
+ALTER COLUMN "invoiceCount" SET DATA TYPE BIGINT;

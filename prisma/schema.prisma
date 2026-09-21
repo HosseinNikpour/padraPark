@@ -57,9 +57,9 @@ model DailyReport {
   issues        Issue[]
   incidents     Incident[]
   totalSales    BigInt             @default(0)
-  totalDiscount Int             @default(0)
-  cashAmount    Int             @default(0)
-  invoiceCount  Int             @default(0)
+  totalDiscount BigInt             @default(0)
+  cashAmount    BigInt             @default(0)
+  invoiceCount  BigInt             @default(0)
 
   @@unique([branchId, date])
 }
